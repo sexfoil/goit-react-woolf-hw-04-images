@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { getPixabayImages } from 'api/PixabayAPI';
+
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
-import { getPixabayImages } from 'api/PixabayAPI';
-import Modal from './Modal/Modal';
+import { Modal } from './Modal/Modal';
 
 import css from './App.module.css';
+
+const IMAGES_PER_PAGE = 12;
 
 const App = () => {
   const [images, setImages] = useState([]);
@@ -22,21 +25,21 @@ const App = () => {
         setLoading(true);
         setLoadMore(false);
 
-        const data = await getPixabayImages(query, page);
-        const updatedImages = prev => [...prev, ...data.hits];
+        const data = await getPixabayImages(query, page, IMAGES_PER_PAGE);
+        const updatedImages = prev => {
+          return [...prev, ...data.hits];
+        };
 
         setImages(updatedImages);
-        setLoadMore(updatedImages.length < data.totalHits);
+        setLoadMore(page < Math.ceil(data.totalHits / IMAGES_PER_PAGE));
       } catch (error) {
         console.log(`Something went wrong... Cause: ${error}`);
       } finally {
         setLoading(false);
       }
     };
-    console.log('query>>', query);
-    if (query) {
-      console.log('searching... ', page);
 
+    if (query) {
       getImages(query, page);
     }
   }, [query, page]);
@@ -53,14 +56,22 @@ const App = () => {
     setPage(page + 1);
   };
 
+  // const updateImage = image => {
+  //   setCurrentImage(image);
+  // };
+
+  // useEffect(() => {
+  //   console.log('current image>> ', currentImage);
+  // }, [currentImage]);
+
   return (
     <div className={css.app}>
       <Searchbar onSearchSubmit={onSearchSubmit} />
-      {images && <ImageGallery images={images} setImage={setCurrentImage} />}
+      {images && <ImageGallery images={images} updateImage={setCurrentImage} />}
       {loading && <Loader />}
       {loadMore && <Button loadMore={onLoadMoreClick} />}
       {currentImage && (
-        <Modal image={currentImage} setImage={setCurrentImage} />
+        <Modal image={currentImage} updateImage={setCurrentImage} />
       )}
     </div>
   );

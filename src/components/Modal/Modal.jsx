@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import css from './Modal.module.css';
 
-const Modal = (image, setImage) => {
+export const Modal = ({ image, updateImage }) => {
   useEffect(() => {
     const onEscPress = evt => {
       if (evt.code === 'Escape') {
         console.log('Esc pressing...');
-        setImage(null);
+        updateImage(null);
       }
     };
 
@@ -15,12 +15,12 @@ const Modal = (image, setImage) => {
     return () => {
       document.removeEventListener('keydown', onEscPress);
     };
-  }, [setImage]);
+  }, [updateImage]);
 
   const onClick = evt => {
     if (evt.target === evt.currentTarget) {
       console.log('Overlay clicking...');
-      setImage(null);
+      updateImage(null);
     }
   };
 
@@ -32,5 +32,3 @@ const Modal = (image, setImage) => {
     </div>
   );
 };
-
-export default Modal;
