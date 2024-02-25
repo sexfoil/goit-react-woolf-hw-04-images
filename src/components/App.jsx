@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { getPixabayImages } from 'api/PixabayAPI';
 
 import { Searchbar } from './Searchbar/Searchbar';
@@ -52,29 +52,18 @@ const App = () => {
     }
   };
 
-  const onLoadMoreClick = () => {
-    setPage(page + 1);
-  };
-
-  // const updateImage = image => {
-  //   setCurrentImage(image);
-  // };
-
-  // useEffect(() => {
-  //   console.log('current image>> ', currentImage);
-  // }, [currentImage]);
-
   return (
     <div className={css.app}>
       <Searchbar onSearchSubmit={onSearchSubmit} />
-      {images && <ImageGallery images={images} updateImage={setCurrentImage} />}
+      <AppContext.Provider value={{ setCurrentImage }}>
+        {images && <ImageGallery images={images} />}
+        {currentImage && <Modal image={currentImage} />}
+      </AppContext.Provider>
       {loading && <Loader />}
-      {loadMore && <Button loadMore={onLoadMoreClick} />}
-      {currentImage && (
-        <Modal image={currentImage} updateImage={setCurrentImage} />
-      )}
+      {loadMore && <Button page={page} setPage={setPage} />}
     </div>
   );
 };
 
+export const AppContext = createContext();
 export default App;

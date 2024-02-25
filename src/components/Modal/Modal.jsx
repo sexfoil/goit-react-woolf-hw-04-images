@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { AppContext } from 'components/App';
 import css from './Modal.module.css';
 
-export const Modal = ({ image, updateImage }) => {
+export const Modal = ({ image }) => {
+  const { setCurrentImage } = useContext(AppContext);
+
   useEffect(() => {
     const onEscPress = evt => {
       if (evt.code === 'Escape') {
-        console.log('Esc pressing...');
-        updateImage(null);
+        setCurrentImage(null);
       }
     };
 
@@ -15,12 +17,11 @@ export const Modal = ({ image, updateImage }) => {
     return () => {
       document.removeEventListener('keydown', onEscPress);
     };
-  }, [updateImage]);
+  }, [setCurrentImage]);
 
   const onClick = evt => {
     if (evt.target === evt.currentTarget) {
-      console.log('Overlay clicking...');
-      updateImage(null);
+      setCurrentImage(null);
     }
   };
 
